@@ -1,5 +1,6 @@
 # cls2json
 - Generate JSON from the class file of Java Virtual Machine.
+- Supported version: Java SE 11 Edition
 
 # Build
 ```Shell
