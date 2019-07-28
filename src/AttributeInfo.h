@@ -874,7 +874,7 @@ public:
     }
 
     inline const ElementValuePair* getElementValuePairAt(uint16_t index) const noexcept {
-        this->elementValuePairs_[index].get();
+        return this->elementValuePairs_[index].get();
     }
 
 private:
