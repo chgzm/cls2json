@@ -1512,27 +1512,73 @@ std::string LocalvarTarget::toString() const noexcept {
 }
 
 std::string CatchTarget::toString() const noexcept {
-    return "";
+    return fmt("\"exception_table_index\":%hu", this->getExceptionTableIndex());
 }
 
 std::string OffsetTarget::toString() const noexcept {
-    return "";
+    return fmt("\"offset\":%hu", this->getOffset());
 }
 
 std::string TypeArgumentTarget::toString() const noexcept {
-    return "";
+    return fmt(
+        "\"offset\":%hu,"
+        "\"type_argument_index\":%hhu",
+        this->getOffset(),
+        this->getTypeArgumentIndex()
+    );
 }
 
 std::string Path::toString() const noexcept {
-    return "";
+    return fmt(
+        "\"type_path_kind\":%hhu,"
+        "\"type_argument_index\":%hhu",
+        this->getTypePathKind(),
+        this->getTypeArgumentIndex()
+    );
 }
 
 std::string TypePath::toString() const noexcept {
-    return "";
+    std::ostringstream ss;
+
+    ss << fmt("\"path_length\":%hhu,", this->getPathLength());
+    ss << "\"path\":[";
+    for (uint8_t i = 0; i < this->getPathLength(); ++i) {
+        if (i != 0) {
+            ss << ",";
+        }
+        ss << "{" << this->getPathAt(i)->toString() << "}";
+    }
+    ss << "]";
+
+    return ss.str();
 }
 
 std::string TypeAnnotation::toString() const noexcept {
-    return "";
+    std::ostringstream ss;
+
+    ss << fmt(
+        "\"target_type\":%hhu,"
+        "\"target_info\":{%s},"
+        "\"type_path\":{%s},"
+        "\"type_index\":%hu,"
+        "\"num_element_vaue_pairs\":%hu,",
+        this->getTargetType(),
+        this->getTargetInfo()->toString(),
+        this->getTypePath()->toString(),
+        this->getTypeIndex(),
+        this->getNumElementValuePairs()
+    );
+
+    ss << "\"element_value_pairs\":[";
+    for (uint16_t i = 0; i < this->getNumElementValuePairs(); ++i) {
+        if (i != 0) {
+            ss << ",";
+        }
+        ss << "{" << this->getElementValuePairAt(i)->toString() << "}";
+    }
+    ss << "]";
+    
+    return ss.str(); 
 }
 
 std::string RuntimeVisibleAnnotationsAttribute::toString() const noexcept {
@@ -1552,19 +1598,80 @@ std::string RuntimeInvisibleParameterAnnotationsAttribute::toString() const noex
 }
 
 std::string RuntimeVisibleTypeAnnotationsAttribute::toString() const noexcept {
-    return "";
+    std::ostringstream ss;
+
+    ss << fmt("\"num_annotations\":%hu,", this->getNumAnnotations());
+
+    ss << "\"annotations\":[";
+    for (uint16_t i = 0; i < this->getNumAnnotations(); ++i) {
+        if (i != 0) {
+            ss << ",";
+        }
+        ss << "{" << this->getAnnotationAt(i)->toString() << "}";
+    }
+    ss << "]";
+
+    return ss.str();
 }
 
 std::string RuntimeInvisibleTypeAnnotationsAttribute::toString() const noexcept {
-    return "";
+    std::ostringstream ss;
+
+    ss << fmt("\"num_annotations\":%hu,", this->getNumAnnotations());
+
+    ss << "\"annotations\":[";
+    for (uint16_t i = 0; i < this->getNumAnnotations(); ++i) {
+        if (i != 0) {
+            ss << ",";
+        }
+        ss << "{" << this->getAnnotationAt(i)->toString() << "}";
+    }
+    ss << "]";
+
+    return ss.str();
 }
 
 std::string AnnotationDefaultAttribute::toString() const noexcept {
-    return "";
+    return fmt("\"element_value\":{%s}", this->getDefaultValue()->toString());
+}
+
+std::string BootstrapMethod::toString() const noexcept {
+    std::ostringstream ss;
+
+    ss << fmt(
+        "\"bootstrap_method_ref\":%hu," 
+        "\"num_bootstrap_arguments\":%hu,", 
+        this->getBootstrapMethodRef(),
+        this->getNumBootstrapArguments()
+    ); 
+
+    ss << "\"bootstrap_arguments\":[";
+    for (uint16_t i = 0; i < this->getNumBootstrapArguments(); ++i) {
+        if (i != 0) {   
+            ss << ",";
+        }
+        ss << fmt("%hu", this->getBootstrapArgumentAt(i));
+    }
+    ss << "]";
+
+    return ss.str();
 }
 
 std::string BootstrapMethodsAttribute::toString() const noexcept {
-    return "";
+    std::ostringstream ss;
+
+    ss << fmt("\"num_bootstrap_methods\":%hu,", this->getNumBootstrapMethods());
+    ss << "\"bootstrap_methods\"[";
+
+    for (uint16_t i = 0; i < this->getNumBootstrapMethods(); ++i) {
+        if (i != 0) {
+            ss << ",";
+        }
+        ss << "{" << this->getBootstrapMethodAt(i)->toString() << "}"; 
+    }
+    ss << "]";
+    
+    return ss.str();
 }
 
 std::string Parameter::toString() const noexcept {
@@ -1594,22 +1701,82 @@ std::string MethodParametersAttribute::toString() const noexcept {
 }
 
 std::string Requires::toString() const noexcept {
-    std::ostringstream ss;
-    return ss.str();
+    return fmt(
+        "\"requires_index:\":%hu,"
+        "\"requires_flags:\":%hu,"
+        "\"requires_version_index:\":%hu,",
+        this->getRequiresIndex(),
+        this->getRequiresFlags(),
+        this->getRequiresVersionIndex()
+    );
 }  
 
 std::string Exports::toString() const noexcept {
     std::ostringstream ss;
+    ss << fmt(
+        "\"exports_index:\":%hu,"
+        "\"exports_flags:\":%hu,"
+        "\"exports_to_count:\":%hu,",
+        this->getExportsIndex(),
+        this->getExportsFlags(),
+        this->getExportsToCount()
+    );
+
+    ss << "\"exports_to_index\":[";
+    for (uint16_t i = 0; i < this->getExportsToCount(); ++i) {
+        if (i != 0) {
+            ss << ",";
+        }
+        ss << fmt("%hu", this->getExportsToIndexAt(i));
+    }
+    ss << "]";
+
     return ss.str();
 }  
 
 std::string Opens::toString() const noexcept {
     std::ostringstream ss;
+
+    ss << fmt(
+        "\"opens_index:\":%hu,"
+        "\"opens_flags:\":%hu,"
+        "\"opens_to_count:\":%hu,",
+        this->getOpensIndex(),
+        this->getOpensFlags(),
+        this->getOpensToCount()
+    );
+
+    ss << "\"opens_to_index\":[";
+    for (uint16_t i = 0; i < this->getOpensToCount(); ++i) {
+        if (i != 0) {
+            ss << ",";
+        }
+        ss << fmt("%hu", this->getOpensToIndexAt(i));
+    }
+
     return ss.str();
 }  
 
 std::string Provides::toString() const noexcept {
     std::ostringstream ss;
+
+    ss << fmt(
+        "\"provides_index\":%hu,"
+        "\"provides_with_count\":%hu,",
+        this->getProvidesIndex(),
+        this->getProvidesWithCount()
+    );
+
+    ss << "\"provides_with_index\":[";
+    for (uint16_t i = 0; i < this->getProvidesWithCount(); ++i) {
+        if (i != 0) {
+            ss << ",";
+        }
+        ss << fmt("%hu", this->getProvidesWithIndexAt(i));
+    } 
+
+    ss << "]";
+
     return ss.str();
 }
 

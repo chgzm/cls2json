@@ -1223,6 +1223,10 @@ public:
         return this->path_;
     }
 
+    inline const Path* getPathAt(uint8_t index) const noexcept {
+        return this->path_[index].get();
+    }
+
 private:
     std::vector<std::unique_ptr<Path>> path_;
 };
@@ -1234,6 +1238,30 @@ public:
 
     int load(const uint8_t* addr, std::size_t& pos, const ConstantPool& cp, const AttributeInfo& info) noexcept;
     std::string toString() const noexcept;
+
+    inline uint8_t getTargetType() const noexcept {
+        return this->targetType_;
+    }
+
+    inline const TargetImpl* getTargetInfo() const noexcept {
+        return this->targetInfo_.get();
+    }
+
+    inline const TypePath* getTypePath() const noexcept {
+        return this->typePath_.get();
+    }
+
+    inline uint16_t getTypeIndex() const noexcept {
+        return this->typeIndex_;
+    }
+
+    inline uint16_t getNumElementValuePairs() const noexcept {
+        return this->elementValuePairs_.size();
+    }
+
+    inline const ElementValuePair* getElementValuePairAt(uint16_t index) const noexcept {
+        return this->elementValuePairs_[index].get();
+    }
 
 private:
     uint8_t                                        targetType_;
@@ -1259,6 +1287,10 @@ public:
         return this->annotations_;
     }
 
+    inline const TypeAnnotation* getAnnotationAt(uint16_t index) const noexcept {
+        return this->annotations_[index].get();
+    }
+
 private:
     std::vector<std::unique_ptr<TypeAnnotation>> annotations_;
 };
@@ -1277,6 +1309,10 @@ public:
 
     inline const std::vector<std::unique_ptr<TypeAnnotation>>& getAnnotations() const noexcept {
         return this->annotations_;
+    }
+
+    inline const TypeAnnotation* getAnnotationAt(uint16_t index) const noexcept {
+        return this->annotations_[index].get();
     }
 
 private:
@@ -1319,6 +1355,10 @@ public:
         return this->bootstrapArguments_;
     }
 
+    inline uint16_t getBootstrapArgumentAt(uint16_t index) const noexcept {
+        return this->bootstrapArguments_[index];
+    }
+
 private:
     uint16_t              bootstrapMethodRef_;
     std::vector<uint16_t> bootstrapArguments_;
@@ -1338,6 +1378,10 @@ public:
 
     inline const std::vector<std::unique_ptr<BootstrapMethod>>& getBootstrapMethods() const noexcept {
         return this->bootstrapMethods_;
+    }
+
+    inline const BootstrapMethod* getBootstrapMethodAt(uint16_t index) const noexcept {
+        return this->bootstrapMethods_[index].get();
     }
 
 private:
@@ -1439,6 +1483,10 @@ public:
         return this->exportsToIndex_;
     }
 
+    inline uint16_t getExportsToIndexAt(uint16_t index) const noexcept {
+        return this->exportsToIndex_[index];
+    }
+
 private:
     uint16_t              exportsIndex_;
     uint16_t              exportsFlags_;
@@ -1467,6 +1515,10 @@ public:
 
     inline const std::vector<uint16_t>& getOpensToIndex() const noexcept {
         return this->opensToIndex_;
+    }
+
+    inline uint16_t getOpensToIndexAt(uint16_t index) const noexcept {
+        return this->opensToIndex_[index];
     }
 
 private:
